@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.webkit.* // Import all webkit classes
 import androidx.fragment.app.Fragment
 import com.osamaalek.kiosklauncher.R
+import com.osamaalek.kiosklauncher.policy.PolicyStore
 
 /**
  * This fragment is modified to replace the default app launcher with a single, locked WebView
@@ -18,9 +19,8 @@ class HomeFragment : Fragment() {
 
     private lateinit var webView: WebView
 
-    // The Google Form URL the kiosk will be locked to
-    private val KIOSS_URL = "https:/[Insert kiosk link here]"
     private val TAG = "KioskWebView"
+    private var kioskUrl: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,7 +33,13 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         webView = view.findViewById(R.id.webView)
+        view.findViewById<View>(R.id.kiosk_exit_hotspot).setOnLongClickListener {
+            (activity as? MainActivity)?.openSettingsWithPin()
+            true
+        }
 
+        val policy = PolicyStore(requireContext()).getPolicy()
+        kioskUrl = policy.kioskUrl.ifBlank { "https://www.example.com" }
         setupWebView()
         loadWeb()
     }
@@ -66,7 +72,7 @@ class HomeFragment : Fragment() {
         webView.clearHistory()
 
         // Set the custom client that handles navigation and security errors
-        webView.webViewClient = KioskWebViewClient(requireContext().packageName)
+        webView.webViewClient = KioskWebViewClient()
 
         // Ensure hardware acceleration is enabled (can sometimes fix rendering issues)
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
@@ -76,14 +82,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun loadWeb() {
-        Log.d(TAG, "Attempting to load URL: $KIOSS_URL")
-        webView.loadUrl(KIOSS_URL)
+        Log.d(TAG, "Attempting to load URL: $kioskUrl")
+        webView.loadUrl(kioskUrl)
     }
 
     /**
      * Custom WebViewClient to control navigation and handle SSL/connection errors.
      */
-    private class KioskWebViewClient(private val packageName: String) : WebViewClient() {
+    private class KioskWebViewClient : WebViewClient() {
 
         private val TAG = "KioskWebViewClient"
 

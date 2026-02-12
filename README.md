@@ -9,15 +9,44 @@ Kiosk Launcher is an Android app that allows you to turn any Android device into
 - Set a password to exit kiosk mode or access device settings
 - Schedule kiosk mode to start and stop at specific times
 - Restart the device automatically at a specific time
+- Local settings UI + remote policy sync (HTTP JSON)
 - Support for portrait and landscape orientations
-- Support for Android 4.4 and above
+- Support for Android 10 and above (Device Owner required)
 
 ## Usage
-To exit kiosk mode, follow these steps:
+To exit kiosk mode or open settings:
 
-1. Tap on the exit button on the top right corner of the home screen.
-2. Enter your password and tap on OK.
-3. Tap on the stop button to deactivate kiosk mode.
+1. Long-press the hidden hotspot at the top-left corner.
+2. Enter your PIN.
+3. Use the Settings screen to stop kiosk mode or open system settings.
+
+## Device Owner requirement (Android 10+)
+This app expects Device Owner mode to fully lock the device and apply status bar restrictions.
+You can set it via ADB on a fresh device:
+
+```
+adb shell dpm set-device-owner com.osamaalek.kiosklauncher/.MyDeviceAdminReceiver
+```
+
+## Remote policy JSON example
+
+```json
+{
+  "kioskUrl": "https://your-kiosk-url",
+  "allowedPackages": ["com.osamaalek.kiosklauncher", "com.example.app"],
+  "disableStatusBar": true,
+  "disableNotifications": true,
+  "hideNavigationBar": true,
+  "exitPinHash": "sha256_hex_hash",
+  "scheduleStart": "08:00",
+  "scheduleStop": "20:00",
+  "rebootTime": "03:00",
+  "remoteUrl": "https://policy.example.com/device/123",
+  "remoteToken": "your-token"
+}
+```
+
+The remote token is sent as `Authorization: Bearer <token>`.
 
 ## Article
 

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kiosk URL" />
+
+        <EditText
+            android:id="@+id/edit_kiosk_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textUri" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="允许的应用" />
+
+        <TextView
+            android:id="@+id/text_allowed_apps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="未选择" />
+
+        <Button
+            android:id="@+id/button_select_apps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="选择应用" />
+
+        <Switch
+            android:id="@+id/switch_disable_status_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="禁用状态栏" />
+
+        <Switch
+            android:id="@+id/switch_disable_notifications"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="禁用通知" />
+
+        <Switch
+            android:id="@+id/switch_hide_navigation_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="隐藏导航栏" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="定时启动" />
+
+        <TextView
+            android:id="@+id/text_start_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="未设置" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_set_start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="设置时间" />
+
+            <Button
+                android:id="@+id/button_clear_start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="清除" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="定时退出" />
+
+        <TextView
+            android:id="@+id/text_stop_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="未设置" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_set_stop_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="设置时间" />
+
+            <Button
+                android:id="@+id/button_clear_stop_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="清除" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="定时重启" />
+
+        <TextView
+            android:id="@+id/text_reboot_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="未设置" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_set_reboot_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="设置时间" />
+
+            <Button
+                android:id="@+id/button_clear_reboot_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="清除" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="远程策略URL" />
+
+        <EditText
+            android:id="@+id/edit_remote_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textUri" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="远程Token" />
+
+        <EditText
+            android:id="@+id/edit_remote_token"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword" />
+
+        <Button
+            android:id="@+id/button_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="保存并应用" />
+
+        <Button
+            android:id="@+id/button_sync"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="立即同步远程策略" />
+
+        <Button
+            android:id="@+id/button_set_pin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="设置/修改PIN" />
+
+        <Button
+            android:id="@+id/button_open_system_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="打开系统设置" />
+
+        <Button
+            android:id="@+id/button_exit_kiosk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="退出Kiosk模式" />
+    </LinearLayout>
+</ScrollView>

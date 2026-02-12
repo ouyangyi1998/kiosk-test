@@ -6,6 +6,7 @@
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -33,6 +34,21 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:exported="false"
+            android:launchMode="singleTask" />
+
+        <activity
+            android:name=".settings.AppsSelectionActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.KioskControlActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTask" />
+
         <receiver
             android:name=".MyDeviceAdminReceiver"
             android:exported="true"
@@ -44,6 +60,18 @@
             <meta-data
                 android:name="android.app.device_admin"
                 android:resource="@xml/device_admin_conf" />
+        </receiver>
+
+        <receiver
+            android:name=".receivers.KioskScheduleReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".receivers.BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
         </receiver>
 
     </application>
