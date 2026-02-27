@@ -13,18 +13,27 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Kiosk URL" />
+            android:text="设备状态" />
 
-        <EditText
-            android:id="@+id/edit_kiosk_url"
+        <TextView
+            android:id="@+id/text_device_owner_state"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textUri" />
+            android:layout_marginTop="4dp"
+            android:text="检查中..."
+            android:textColor="#555555" />
+
+        <Switch
+            android:id="@+id/switch_single_app_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="单应用模式（仅允许1个应用）" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:text="允许的应用" />
 
         <TextView

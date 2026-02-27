@@ -1,39 +1,56 @@
 # Kiosk Launcher
 
-Kiosk Launcher is an Android app that allows you to turn any Android device into a kiosk mode device. It locks down the device to a single app or a set of apps and prevents users from accessing any other features or settings.
+Kiosk Launcher is an Android app that turns a device into a policy-driven kiosk launcher. It can lock the device to one or more configured apps, apply lock-task restrictions, and provide a protected management entry for operators.
 
 ## Features
 
-- Set a single app or multiple apps as kiosk mode apps
-- Enable or disable the status bar, navigation bar, and notification access
-- Set a password to exit kiosk mode or access device settings
-- Schedule kiosk mode to start and stop at specific times
-- Restart the device automatically at a specific time
+- App-based kiosk launcher (no WebView homepage)
+- Single-app mode (auto-launches the configured app after a short delay)
+- Multi-app mode (shows only configured and installed apps)
+- Lock-task controls: status bar, notifications, and immersive navigation behavior
+- PIN-protected management access and kiosk exit
+- Two-step anti-mistouch exit gesture (5 taps + 1.2s long press)
 - Local settings UI + remote policy sync (HTTP JSON)
-- Support for portrait and landscape orientations
-- Support for Android 10 and above (Device Owner required)
+- Schedule start/stop kiosk and scheduled reboot
+- Android 10+ (Device Owner recommended for full restrictions)
 
 ## Usage
-To exit kiosk mode or open settings:
 
-1. Long-press the hidden hotspot at the top-left corner.
-2. Enter your PIN.
-3. Use the Settings screen to stop kiosk mode or open system settings.
+### Configure kiosk apps
 
-## Device Owner requirement (Android 10+)
-This app expects Device Owner mode to fully lock the device and apply status bar restrictions.
-You can set it via ADB on a fresh device:
+1. Open Settings from the management entry.
+2. Choose allowed packages.
+3. Enable single-app mode (optional) to auto-launch one app.
+4. Save and apply policy.
+
+### Enter management / exit kiosk
+
+Use the hotspot in the top-left corner:
+
+1. Tap 5 times quickly (within 3 seconds) to arm management entry.
+2. Long-press for 1.2 seconds.
+3. Enter PIN to open Settings.
+4. Use "退出Kiosk模式" if you need to leave kiosk.
+
+## Device Owner Requirement
+
+For full lock-task behavior (especially status/notification restrictions), use Device Owner provisioning.
+
+Set Device Owner on a freshly provisioned device:
 
 ```
 adb shell dpm set-device-owner com.osamaalek.kiosklauncher/.MyDeviceAdminReceiver
 ```
 
+Without Device Owner, some vendor ROMs may fall back to pinned mode or ignore parts of lock-task policy.
+
 ## Remote policy JSON example
 
 ```json
 {
-  "kioskUrl": "https://your-kiosk-url",
+  "kioskUrl": "",
   "allowedPackages": ["com.osamaalek.kiosklauncher", "com.example.app"],
+  "singleAppMode": false,
   "disableStatusBar": true,
   "disableNotifications": true,
   "hideNavigationBar": true,
@@ -47,6 +64,13 @@ adb shell dpm set-device-owner com.osamaalek.kiosklauncher/.MyDeviceAdminReceive
 ```
 
 The remote token is sent as `Authorization: Bearer <token>`.
+`kioskUrl` is retained for compatibility but is not used as homepage in app-launcher mode.
+
+## Troubleshooting
+
+- `App is pinned` appears: Device Owner is not fully active on current ROM/provisioning state.
+- Can't launch selected app in kiosk: ensure the package is installed and included in `allowedPackages`.
+- Restrictions not applied: verify Device Owner is active, then re-save policy in Settings.
 
 ## Article
 

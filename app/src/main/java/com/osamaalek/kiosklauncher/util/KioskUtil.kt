@@ -25,13 +25,7 @@ class KioskUtil {
             val isDeviceOwner = devicePolicyManager.isDeviceOwnerApp(context.packageName)
 
             if (!isAdminActive) {
-                context.startActivity(
-                    Intent().setComponent(
-                        ComponentName(
-                            "com.android.settings", "com.android.settings.DeviceAdminSettings"
-                        )
-                    )
-                )
+                openDeviceAdminSettings(context)
             }
 
             if (isDeviceOwner) {
@@ -39,7 +33,12 @@ class KioskUtil {
                 filter.addCategory(Intent.CATEGORY_HOME)
                 filter.addCategory(Intent.CATEGORY_DEFAULT)
                 val activity = ComponentName(context, MainActivity::class.java)
-                devicePolicyManager.addPersistentPreferredActivity(myDeviceAdmin, filter, activity)
+                try {
+                    devicePolicyManager.addPersistentPreferredActivity(myDeviceAdmin, filter, activity)
+                } catch (_: SecurityException) {
+                    Toast.makeText(context, "缺少 Device Owner 权限，无法设置默认桌面", Toast.LENGTH_SHORT)
+                        .show()
+                }
 
                 val policy = PolicyStore(context).getPolicy()
                 PolicyApplier(context).apply(policy)
@@ -50,11 +49,13 @@ class KioskUtil {
                 ).show()
             }
 
-            if (isAdminActive) {
+            if (isAdminActive && isDeviceOwner) {
                 try {
                     context.startLockTask()
                 } catch (_: IllegalStateException) {
                     // LockTask may fail if not yet allowed by DPM, retry on next lifecycle.
+                } catch (_: SecurityException) {
+                    // Device may not allow lock task yet.
                 }
             }
         }
@@ -99,6 +100,22 @@ class KioskUtil {
                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
             activity.window.decorView.systemUiVisibility = flags
+        }
+
+        private fun openDeviceAdminSettings(context: Context) {
+            val explicitIntent = Intent().setComponent(
+                ComponentName("com.android.settings", "com.android.settings.DeviceAdminSettings")
+            )
+            val fallbackIntent = Intent(android.provider.Settings.ACTION_SECURITY_SETTINGS)
+            try {
+                context.startActivity(explicitIntent)
+            } catch (_: Exception) {
+                try {
+                    context.startActivity(fallbackIntent)
+                } catch (_: Exception) {
+                    Toast.makeText(context, "无法打开设备管理设置页", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }

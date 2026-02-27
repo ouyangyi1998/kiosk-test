@@ -6,6 +6,7 @@ import org.json.JSONObject
 data class PolicyUpdate(
     val kioskUrl: String?,
     val allowedPackages: Set<String>?,
+    val singleAppMode: Boolean?,
     val disableStatusBar: Boolean?,
     val disableNotifications: Boolean?,
     val hideNavigationBar: Boolean?,
@@ -20,6 +21,7 @@ data class PolicyUpdate(
         return existing.copy(
             kioskUrl = kioskUrl ?: existing.kioskUrl,
             allowedPackages = allowedPackages ?: existing.allowedPackages,
+            singleAppMode = singleAppMode ?: existing.singleAppMode,
             disableStatusBar = disableStatusBar ?: existing.disableStatusBar,
             disableNotifications = disableNotifications ?: existing.disableNotifications,
             hideNavigationBar = hideNavigationBar ?: existing.hideNavigationBar,
@@ -38,6 +40,7 @@ object PolicyJson {
         val json = JSONObject()
         json.put("kioskUrl", policy.kioskUrl)
         json.put("allowedPackages", JSONArray(policy.allowedPackages.toList()))
+        json.put("singleAppMode", policy.singleAppMode)
         json.put("disableStatusBar", policy.disableStatusBar)
         json.put("disableNotifications", policy.disableNotifications)
         json.put("hideNavigationBar", policy.hideNavigationBar)
@@ -55,6 +58,7 @@ object PolicyJson {
         return PolicyUpdate(
             kioskUrl = stringOrNull(json, "kioskUrl"),
             allowedPackages = stringSetOrNull(json, "allowedPackages"),
+            singleAppMode = booleanOrNull(json, "singleAppMode"),
             disableStatusBar = booleanOrNull(json, "disableStatusBar"),
             disableNotifications = booleanOrNull(json, "disableNotifications"),
             hideNavigationBar = booleanOrNull(json, "hideNavigationBar"),
@@ -69,7 +73,7 @@ object PolicyJson {
 
     private fun stringOrNull(json: JSONObject, key: String): String? {
         if (!json.has(key)) return null
-        return if (json.isNull(key)) null else json.optString(key, null)
+        return if (json.isNull(key)) null else json.optString(key, "")
     }
 
     private fun booleanOrNull(json: JSONObject, key: String): Boolean? {

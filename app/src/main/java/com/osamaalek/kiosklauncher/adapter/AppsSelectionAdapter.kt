@@ -13,6 +13,7 @@ import com.osamaalek.kiosklauncher.model.AppInfo
 class AppsSelectionAdapter(
     private val list: List<AppInfo>,
     private val selected: MutableSet<String>,
+    private val singleSelection: Boolean,
     private val onSelectionChanged: (Set<String>) -> Unit
 ) : RecyclerView.Adapter<AppsSelectionAdapter.ContentHolder>() {
 
@@ -32,15 +33,23 @@ class AppsSelectionAdapter(
         holder.itemView.setOnClickListener {
             if (packageName.isNotBlank()) {
                 toggleSelection(packageName)
-                notifyItemChanged(position)
+                if (!singleSelection) {
+                    notifyItemChanged(position)
+                }
             }
         }
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
             if (packageName.isBlank()) return@setOnCheckedChangeListener
             if (isChecked) {
+                if (singleSelection) {
+                    selected.clear()
+                }
                 selected.add(packageName)
             } else {
                 selected.remove(packageName)
+            }
+            if (singleSelection) {
+                notifyDataSetChanged()
             }
             onSelectionChanged(selected)
         }
@@ -52,7 +61,13 @@ class AppsSelectionAdapter(
         if (selected.contains(packageName)) {
             selected.remove(packageName)
         } else {
+            if (singleSelection) {
+                selected.clear()
+            }
             selected.add(packageName)
+        }
+        if (singleSelection) {
+            notifyDataSetChanged()
         }
         onSelectionChanged(selected)
     }

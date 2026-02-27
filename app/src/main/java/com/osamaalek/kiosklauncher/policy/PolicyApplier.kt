@@ -23,10 +23,19 @@ class PolicyApplier(private val context: Context) {
         dpm.setLockTaskPackages(admin, allowedPackages.toTypedArray())
 
         val features = buildLockTaskFeatures(policy)
-        dpm.setLockTaskFeatures(admin, features)
+        try {
+            dpm.setLockTaskFeatures(admin, features)
+        } catch (_: IllegalArgumentException) {
+            // Fallback for vendor ROMs with stricter lock task feature constraints.
+            dpm.setLockTaskFeatures(admin, DevicePolicyManager.LOCK_TASK_FEATURE_NONE)
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            dpm.setStatusBarDisabled(admin, policy.disableStatusBar)
+            try {
+                dpm.setStatusBarDisabled(admin, policy.disableStatusBar)
+            } catch (_: SecurityException) {
+                // Ignore if ROM blocks status bar policy at runtime.
+            }
         }
 
         dpm.addUserRestriction(admin, UserManager.DISALLOW_UNINSTALL_APPS)
@@ -34,10 +43,15 @@ class PolicyApplier(private val context: Context) {
 
     private fun buildLockTaskFeatures(policy: KioskPolicy): Int {
         var flags = DevicePolicyManager.LOCK_TASK_FEATURE_NONE
-        if (!policy.disableNotifications) {
+        val allowNotifications = !policy.disableNotifications
+        val allowSystemInfo = !policy.disableStatusBar
+        if (allowNotifications || allowSystemInfo) {
+            flags = flags or DevicePolicyManager.LOCK_TASK_FEATURE_HOME
+        }
+        if (allowNotifications) {
             flags = flags or DevicePolicyManager.LOCK_TASK_FEATURE_NOTIFICATIONS
         }
-        if (!policy.disableStatusBar) {
+        if (allowSystemInfo) {
             flags = flags or DevicePolicyManager.LOCK_TASK_FEATURE_SYSTEM_INFO
         }
         return flags

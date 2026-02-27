@@ -21,13 +21,16 @@ class AppsSelectionActivity : AppCompatActivity() {
 
         val preset = intent.getStringArrayListExtra(EXTRA_SELECTED) ?: arrayListOf()
         selectedPackages.addAll(preset)
+        val singleAppMode = intent.getBooleanExtra(EXTRA_SINGLE_MODE, false)
 
         val apps = AppsUtil.getAllApps(this)
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_apps)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = AppsSelectionAdapter(apps, selectedPackages) {
+        recyclerView.adapter = AppsSelectionAdapter(apps, selectedPackages, singleAppMode) {
             // no-op, we read selectedPackages on submit
         }
+
+        title = if (singleAppMode) "选择单个应用" else "选择多个应用"
 
         findViewById<Button>(R.id.button_apps_done).setOnClickListener {
             val data = Intent().putStringArrayListExtra(
@@ -41,12 +44,13 @@ class AppsSelectionActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_SELECTED = "extra_selected_packages"
+        const val EXTRA_SINGLE_MODE = "extra_single_mode"
 
-        fun newIntent(context: Context, selected: Set<String>): Intent {
+        fun newIntent(context: Context, selected: Set<String>, singleAppMode: Boolean): Intent {
             return Intent(context, AppsSelectionActivity::class.java).putStringArrayListExtra(
                 EXTRA_SELECTED,
                 ArrayList(selected)
-            )
+            ).putExtra(EXTRA_SINGLE_MODE, singleAppMode)
         }
     }
 }

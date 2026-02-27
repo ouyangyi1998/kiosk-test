@@ -42,6 +42,7 @@ class PolicyStore(private val context: Context) {
         return KioskPolicy(
             kioskUrl = DEFAULT_KIOSK_URL,
             allowedPackages = emptySet(),
+            singleAppMode = false,
             disableStatusBar = true,
             disableNotifications = true,
             hideNavigationBar = true,
@@ -58,6 +59,7 @@ class PolicyStore(private val context: Context) {
         private const val PREFS_NAME = "kiosk_policy"
         private const val KEY_POLICY_JSON = "policy_json"
         private const val KEY_LAST_SYNC = "last_sync"
-        private const val DEFAULT_KIOSK_URL = "https://www.example.com"
+        const val LEGACY_PLACEHOLDER_URL = "https://www.example.com"
+        private const val DEFAULT_KIOSK_URL = ""
     }
 }

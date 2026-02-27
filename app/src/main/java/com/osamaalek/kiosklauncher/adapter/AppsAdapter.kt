@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.osamaalek.kiosklauncher.R
 import com.osamaalek.kiosklauncher.model.AppInfo
@@ -28,7 +29,15 @@ class AppsAdapter(private val list: List<AppInfo>, private val context: Context)
         holder.itemView.setOnClickListener {
             val launchIntent: Intent? =
                 context.packageManager.getLaunchIntentForPackage(list[position].packageName.toString())
-            context.startActivity(launchIntent)
+            if (launchIntent != null) {
+                try {
+                    context.startActivity(launchIntent)
+                } catch (_: SecurityException) {
+                    Toast.makeText(context, "应用未加入 kiosk 白名单或系统限制启动", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(context, "应用无法启动", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
