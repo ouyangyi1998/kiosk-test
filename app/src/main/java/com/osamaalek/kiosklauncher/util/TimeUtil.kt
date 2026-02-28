@@ -18,7 +18,7 @@ object TimeUtil {
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
         }
-        if (next.before(now)) {
+        if (next.timeInMillis <= now.timeInMillis + 60_000L) {
             next.add(Calendar.DAY_OF_YEAR, 1)
         }
         return next.timeInMillis

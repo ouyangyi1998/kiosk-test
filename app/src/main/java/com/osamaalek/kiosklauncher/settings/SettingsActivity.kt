@@ -318,29 +318,32 @@ class SettingsActivity : AppCompatActivity() {
             setPadding(24, 16, 24, 0)
         }
 
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.title_set_pin)
             .setView(layout)
-            .setPositiveButton(R.string.button_save) { _, _ ->
-                val pin1 = input1.text.toString()
-                val pin2 = input2.text.toString()
-                if (pin1.length < 4 || pin1 != pin2) {
-                    Toast.makeText(this, getString(R.string.error_pin_invalid_or_mismatch), Toast.LENGTH_SHORT)
-                        .show()
-                    return@setPositiveButton
-                }
-                currentPinHash = PinUtil.hashPin(pin1)
-                val policy = buildPolicy()
-                if (!validatePolicy(policy)) {
-                    return@setPositiveButton
-                }
-                store.savePolicy(policy)
-                applier.apply(policy)
-                Toast.makeText(this, getString(R.string.toast_pin_updated_saved), Toast.LENGTH_SHORT).show()
-                refreshDeviceState()
-            }
+            .setPositiveButton(R.string.button_save, null)
             .setNegativeButton(R.string.button_cancel, null)
             .show()
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val pin1 = input1.text.toString()
+            val pin2 = input2.text.toString()
+            if (pin1.length < 4 || pin1 != pin2) {
+                Toast.makeText(this, getString(R.string.error_pin_invalid_or_mismatch), Toast.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+            currentPinHash = PinUtil.hashPin(pin1)
+            val policy = buildPolicy()
+            if (!validatePolicy(policy)) {
+                return@setOnClickListener
+            }
+            store.savePolicy(policy)
+            applier.apply(policy)
+            Toast.makeText(this, getString(R.string.toast_pin_updated_saved), Toast.LENGTH_SHORT).show()
+            refreshDeviceState()
+            dialog.dismiss()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
