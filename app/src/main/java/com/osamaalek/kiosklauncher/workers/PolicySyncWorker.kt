@@ -40,10 +40,14 @@ class PolicySyncWorker(context: Context, params: WorkerParameters) : Worker(cont
                 val stream = if (code in 200..299) connection.inputStream else connection.errorStream
                 val body = stream?.bufferedReader()?.use { reader -> reader.readText() }.orEmpty()
                 if (code in 200..299) {
-                    val merged = store.updateFromRemote(body)
-                    PolicyApplier(applicationContext).apply(merged)
-                    KioskScheduler.scheduleAll(applicationContext, merged)
-                    Result.success()
+                    try {
+                        val merged = store.updateFromRemote(body)
+                        PolicyApplier(applicationContext).apply(merged)
+                        KioskScheduler.scheduleAll(applicationContext, merged)
+                        Result.success()
+                    } catch (_: Exception) {
+                        Result.failure()
+                    }
                 } else if (code >= 500) {
                     Result.retry()
                 } else {
@@ -52,8 +56,10 @@ class PolicySyncWorker(context: Context, params: WorkerParameters) : Worker(cont
             } finally {
                 connection.disconnect()
             }
-        } catch (_: Exception) {
+        } catch (_: java.io.IOException) {
             Result.retry()
+        } catch (_: Exception) {
+            Result.failure()
         }
     }
 

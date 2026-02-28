@@ -1,5 +1,6 @@
 package com.osamaalek.kiosklauncher.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.osamaalek.kiosklauncher.receivers.KioskScheduleReceiver
@@ -11,7 +12,9 @@ class KioskControlActivity : AppCompatActivity() {
         when (intent.action) {
             KioskScheduleReceiver.ACTION_START -> {
                 KioskUtil.resumeKioskMode(this)
-                KioskUtil.startKioskMode(this, false)
+                val mainIntent = Intent(this, MainActivity::class.java)
+                mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(mainIntent)
             }
             KioskScheduleReceiver.ACTION_STOP -> KioskUtil.stopKioskMode(this)
         }
