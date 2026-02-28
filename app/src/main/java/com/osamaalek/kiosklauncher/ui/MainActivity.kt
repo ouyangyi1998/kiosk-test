@@ -60,18 +60,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView) is AppsListFragment) supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainerView, HomeFragment()).commit()
+        val fragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)
+        if (fragment is AppsListFragment) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerView, HomeFragment()).commit()
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode != KeyEvent.KEYCODE_BACK) return super.onKeyDown(keyCode, event)
+        val fragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)
+        if (fragment is AppsListFragment) {
+            return super.onKeyDown(keyCode, event)
+        }
         // Consume BACK in kiosk and handle on key up.
         return true
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode != KeyEvent.KEYCODE_BACK) return super.onKeyUp(keyCode, event)
+        val fragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)
+        if (fragment is AppsListFragment) {
+            return super.onKeyUp(keyCode, event)
+        }
         val now = SystemClock.elapsedRealtime()
 
         if (isBackConfirmPending(now)) {

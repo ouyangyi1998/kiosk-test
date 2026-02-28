@@ -107,7 +107,12 @@ class KioskUtil {
                         myDeviceAdmin,
                         context.packageName
                     )
-                    if (alternativeHome != null) {
+                } catch (_: SecurityException) {
+                    // Ignore if owner privileges change at runtime.
+                }
+
+                if (alternativeHome != null) {
+                    try {
                         val filter = IntentFilter(Intent.ACTION_MAIN).apply {
                             addCategory(Intent.CATEGORY_HOME)
                             addCategory(Intent.CATEGORY_DEFAULT)
@@ -117,7 +122,12 @@ class KioskUtil {
                             alternativeHome.activityInfo.name
                         )
                         devicePolicyManager.addPersistentPreferredActivity(myDeviceAdmin, filter, target)
+                    } catch (_: SecurityException) {
+                        // Will throw on Android 11+ for different package.
                     }
+                }
+
+                try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         devicePolicyManager.setStatusBarDisabled(myDeviceAdmin, false)
                     }
