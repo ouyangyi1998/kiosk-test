@@ -9,7 +9,10 @@ class KioskControlActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         when (intent.action) {
-            KioskScheduleReceiver.ACTION_START -> KioskUtil.startKioskMode(this)
+            KioskScheduleReceiver.ACTION_START -> {
+                KioskUtil.resumeKioskMode(this)
+                KioskUtil.startKioskMode(this, false)
+            }
             KioskScheduleReceiver.ACTION_STOP -> KioskUtil.stopKioskMode(this)
         }
         finish()

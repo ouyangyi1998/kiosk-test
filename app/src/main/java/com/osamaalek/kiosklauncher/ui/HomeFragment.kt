@@ -20,19 +20,31 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.osamaalek.kiosklauncher.R
 import com.osamaalek.kiosklauncher.adapter.AppsAdapter
-import com.osamaalek.kiosklauncher.util.AppsUtil
 import com.osamaalek.kiosklauncher.policy.PolicyStore
+import com.osamaalek.kiosklauncher.util.AppsUtil
 
 class HomeFragment : Fragment() {
     private lateinit var appsRecyclerView: RecyclerView
     private lateinit var emptyStateText: TextView
     private lateinit var hotspotView: View
+    private lateinit var topRightCornerView: View
+    private lateinit var bottomRightCornerView: View
+    private lateinit var bottomLeftCornerView: View
+
     private val uiHandler = Handler(Looper.getMainLooper())
-    private var tapCount = 0
-    private var firstTapAtMs = 0L
+
+    private var cornerGestureIndex = 0
+    private var cornerGestureStartedAt = 0L
     private var armedUntilMs = 0L
+
     private var longPressTriggered = false
     private var suppressAutoLaunch = false
+    private var topLeftDownX = 0f
+    private var topLeftDownY = 0f
+    private var topLeftDownAt = 0L
+    private var emergencyTapCount = 0
+    private var emergencyFirstTapAt = 0L
+
     private val autoLaunchRunnable = Runnable {
         val policy = PolicyStore(requireContext()).getPolicy()
         if (!policy.singleAppMode || suppressAutoLaunch) return@Runnable
@@ -63,11 +75,17 @@ class HomeFragment : Fragment() {
         appsRecyclerView = view.findViewById(R.id.recycler_allowed_apps)
         emptyStateText = view.findViewById(R.id.text_empty_state)
         hotspotView = view.findViewById(R.id.kiosk_exit_hotspot)
+        topRightCornerView = view.findViewById(R.id.kiosk_corner_top_right)
+        bottomRightCornerView = view.findViewById(R.id.kiosk_corner_bottom_right)
+        bottomLeftCornerView = view.findViewById(R.id.kiosk_corner_bottom_left)
 
         appsRecyclerView.layoutManager = GridLayoutManager(requireContext(), 4)
         appsRecyclerView.setHasFixedSize(true)
 
-        hotspotView.setOnTouchListener { _, event -> handleHotspotTouch(event) }
+        hotspotView.setOnTouchListener { _, event -> handleTopLeftTouch(event) }
+        setupCornerSwipeListener(topRightCornerView, CORNER_TOP_RIGHT)
+        setupCornerSwipeListener(bottomRightCornerView, CORNER_BOTTOM_RIGHT)
+        setupCornerSwipeListener(bottomLeftCornerView, CORNER_BOTTOM_LEFT)
 
         renderLauncher(allowAutoLaunch = false)
     }
@@ -79,8 +97,10 @@ class HomeFragment : Fragment() {
 
     override fun onPause() {
         uiHandler.removeCallbacks(autoLaunchRunnable)
+        uiHandler.removeCallbacks(openSettingsRunnable)
         super.onPause()
         suppressAutoLaunch = false
+        resetCornerGesture()
     }
 
     override fun onDestroyView() {
@@ -96,7 +116,7 @@ class HomeFragment : Fragment() {
         if (allowedInstalledApps.isEmpty()) {
             appsRecyclerView.visibility = View.GONE
             emptyStateText.visibility = View.VISIBLE
-            emptyStateText.text = "未配置可用应用，请长按左上角进入设置。"
+            emptyStateText.text = getString(R.string.home_empty_state)
             return
         }
 
@@ -106,7 +126,8 @@ class HomeFragment : Fragment() {
 
         uiHandler.removeCallbacks(autoLaunchRunnable)
         if (allowAutoLaunch && policy.singleAppMode && allowedInstalledApps.size == 1 && !suppressAutoLaunch) {
-            Toast.makeText(requireContext(), "单应用模式：6秒后自动启动，点左上角可取消", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.toast_auto_launch_countdown), Toast.LENGTH_SHORT)
+                .show()
             uiHandler.postDelayed(autoLaunchRunnable, AUTO_LAUNCH_DELAY_MS)
         }
     }
@@ -115,16 +136,21 @@ class HomeFragment : Fragment() {
         if (packageName.isBlank()) return
         val launchIntent = requireContext().packageManager.getLaunchIntentForPackage(packageName)
         if (launchIntent == null) {
-            Toast.makeText(requireContext(), "应用未安装或不可启动", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.toast_app_not_installed), Toast.LENGTH_SHORT).show()
             return
         }
         launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(launchIntent)
     }
 
-    private fun handleHotspotTouch(event: MotionEvent): Boolean {
+    private fun handleTopLeftTouch(event: MotionEvent): Boolean {
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                suppressAutoLaunch = true
+                uiHandler.removeCallbacks(autoLaunchRunnable)
+                topLeftDownX = event.x
+                topLeftDownY = event.y
+                topLeftDownAt = SystemClock.elapsedRealtime()
                 longPressTriggered = false
                 if (isExitGestureArmed()) {
                     uiHandler.removeCallbacks(openSettingsRunnable)
@@ -137,11 +163,18 @@ class HomeFragment : Fragment() {
                 uiHandler.removeCallbacks(openSettingsRunnable)
                 if (isExitGestureArmed()) {
                     if (!longPressTriggered) {
-                        Toast.makeText(requireContext(), "请继续长按 1.2 秒进入管理入口", Toast.LENGTH_SHORT)
+                        Toast.makeText(requireContext(), getString(R.string.toast_hold_to_open_admin), Toast.LENGTH_SHORT)
                             .show()
                     }
                 } else {
-                    registerHotspotTap()
+                    val duration = SystemClock.elapsedRealtime() - topLeftDownAt
+                    val dx = event.x - topLeftDownX
+                    val dy = event.y - topLeftDownY
+                    if (isTap(dx, dy, duration)) {
+                        registerEmergencyTap()
+                    } else if (isCornerSwipe(CORNER_TOP_LEFT, dx, dy, duration)) {
+                        registerCornerSwipe(CORNER_TOP_LEFT)
+                    }
                 }
                 return true
             }
@@ -154,27 +187,129 @@ class HomeFragment : Fragment() {
         return false
     }
 
-    private fun registerHotspotTap() {
-        suppressAutoLaunch = true
-        uiHandler.removeCallbacks(autoLaunchRunnable)
-        vibrateLight()
-        val now = SystemClock.elapsedRealtime()
-        if (firstTapAtMs == 0L || now - firstTapAtMs > EXIT_TAP_WINDOW_MS) {
-            firstTapAtMs = now
-            tapCount = 0
+    private fun setupCornerSwipeListener(view: View, corner: Int) {
+        var downX = 0f
+        var downY = 0f
+        var downAt = 0L
+        view.setOnTouchListener { _, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    suppressAutoLaunch = true
+                    uiHandler.removeCallbacks(autoLaunchRunnable)
+                    downX = event.x
+                    downY = event.y
+                    downAt = SystemClock.elapsedRealtime()
+                    true
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    if (!isExitGestureArmed()) {
+                        val duration = SystemClock.elapsedRealtime() - downAt
+                        val dx = event.x - downX
+                        val dy = event.y - downY
+                        if (isCornerSwipe(corner, dx, dy, duration)) {
+                            registerCornerSwipe(corner)
+                        }
+                    }
+                    true
+                }
+
+                MotionEvent.ACTION_CANCEL -> true
+                else -> false
+            }
         }
-        tapCount += 1
-        val remain = EXIT_TAP_COUNT - tapCount
+    }
+
+    private fun registerEmergencyTap() {
+        val now = SystemClock.elapsedRealtime()
+        if (now > EMERGENCY_UNLOCK_UPTIME_MS) return
+        if (emergencyFirstTapAt == 0L || now - emergencyFirstTapAt > EMERGENCY_TAP_WINDOW_MS) {
+            emergencyFirstTapAt = now
+            emergencyTapCount = 0
+        }
+        emergencyTapCount += 1
+        val remain = EMERGENCY_TAP_COUNT - emergencyTapCount
         if (remain > 0) {
-            Toast.makeText(requireContext(), "再点击 $remain 次激活管理入口", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.toast_emergency_tap_remaining, remain), Toast.LENGTH_SHORT)
+                .show()
+            return
+        }
+        emergencyTapCount = 0
+        emergencyFirstTapAt = 0L
+        vibrateLight()
+        Toast.makeText(requireContext(), getString(R.string.toast_emergency_ready), Toast.LENGTH_SHORT).show()
+        (activity as? MainActivity)?.openSettingsWithPin()
+    }
+
+    private fun registerCornerSwipe(corner: Int) {
+        val now = SystemClock.elapsedRealtime()
+        if (cornerGestureStartedAt != 0L && now - cornerGestureStartedAt > EXIT_SEQUENCE_WINDOW_MS) {
+            resetCornerGesture()
+            Toast.makeText(requireContext(), getString(R.string.toast_corner_timeout), Toast.LENGTH_SHORT).show()
+        }
+
+        val expectedCorner = CORNER_SEQUENCE[cornerGestureIndex]
+        if (corner != expectedCorner) {
+            if (corner == CORNER_SEQUENCE.first()) {
+                cornerGestureIndex = 1
+                cornerGestureStartedAt = now
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.toast_corner_step, cornerGestureIndex, CORNER_SEQUENCE.size),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                resetCornerGesture()
+                Toast.makeText(requireContext(), getString(R.string.toast_corner_retry), Toast.LENGTH_SHORT).show()
+            }
             return
         }
 
-        tapCount = 0
-        firstTapAtMs = 0L
-        armedUntilMs = now + EXIT_ARM_VALID_MS
+        if (cornerGestureIndex == 0) {
+            cornerGestureStartedAt = now
+        }
+        cornerGestureIndex += 1
         vibrateLight()
-        Toast.makeText(requireContext(), "管理入口已激活，请长按左上角 1.2 秒", Toast.LENGTH_SHORT).show()
+        if (cornerGestureIndex < CORNER_SEQUENCE.size) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.toast_corner_step, cornerGestureIndex, CORNER_SEQUENCE.size),
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        resetCornerGesture()
+        armedUntilMs = now + EXIT_ARM_VALID_MS
+        Toast.makeText(requireContext(), getString(R.string.toast_admin_armed), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun resetCornerGesture() {
+        cornerGestureIndex = 0
+        cornerGestureStartedAt = 0L
+    }
+
+    private fun isTap(dx: Float, dy: Float, durationMs: Long): Boolean {
+        val threshold = dpToPx(12f)
+        return kotlin.math.abs(dx) < threshold &&
+            kotlin.math.abs(dy) < threshold &&
+            durationMs <= TAP_MAX_DURATION_MS
+    }
+
+    private fun isCornerSwipe(corner: Int, dx: Float, dy: Float, durationMs: Long): Boolean {
+        if (durationMs > SWIPE_MAX_DURATION_MS) return false
+        val minDistance = dpToPx(SWIPE_MIN_DP)
+        return when (corner) {
+            CORNER_TOP_LEFT -> dx >= minDistance && dy >= minDistance
+            CORNER_TOP_RIGHT -> dx <= -minDistance && dy >= minDistance
+            CORNER_BOTTOM_RIGHT -> dx <= -minDistance && dy <= -minDistance
+            CORNER_BOTTOM_LEFT -> dx >= minDistance && dy <= -minDistance
+            else -> false
+        }
+    }
+
+    private fun dpToPx(dp: Float): Float {
+        return dp * resources.displayMetrics.density
     }
 
     private fun isExitGestureArmed(): Boolean {
@@ -204,10 +339,26 @@ class HomeFragment : Fragment() {
     }
 
     companion object {
-        private const val EXIT_TAP_COUNT = 5
-        private const val EXIT_TAP_WINDOW_MS = 3000L
-        private const val EXIT_LONG_PRESS_MS = 1200L
-        private const val EXIT_ARM_VALID_MS = 8000L
-        private const val AUTO_LAUNCH_DELAY_MS = 6000L
+        private const val CORNER_TOP_LEFT = 0
+        private const val CORNER_TOP_RIGHT = 1
+        private const val CORNER_BOTTOM_RIGHT = 2
+        private const val CORNER_BOTTOM_LEFT = 3
+        private val CORNER_SEQUENCE = intArrayOf(
+            CORNER_TOP_LEFT,
+            CORNER_TOP_RIGHT,
+            CORNER_BOTTOM_RIGHT,
+            CORNER_BOTTOM_LEFT
+        )
+
+        private const val EXIT_LONG_PRESS_MS = 1500L
+        private const val EXIT_ARM_VALID_MS = 10000L
+        private const val EXIT_SEQUENCE_WINDOW_MS = 5000L
+        private const val AUTO_LAUNCH_DELAY_MS = 8000L
+        private const val SWIPE_MIN_DP = 28f
+        private const val SWIPE_MAX_DURATION_MS = 1200L
+        private const val TAP_MAX_DURATION_MS = 300L
+        private const val EMERGENCY_TAP_COUNT = 10
+        private const val EMERGENCY_TAP_WINDOW_MS = 5000L
+        private const val EMERGENCY_UNLOCK_UPTIME_MS = 180000L
     }
 }

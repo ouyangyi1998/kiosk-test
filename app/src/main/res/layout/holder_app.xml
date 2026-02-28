@@ -34,7 +34,7 @@
         android:ellipsize="end"
         android:fontFamily="sans-serif-medium"
         android:maxLines="2"
-        android:text="Chrome"
+        android:text="@string/app_placeholder"
         android:textColor="#F8FAFC"
         android:textSize="13sp" />
 

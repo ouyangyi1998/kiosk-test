@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="选择允许的应用" />
+        android:text="@string/select_allowed_apps_title" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_apps"
@@ -20,5 +20,5 @@
         android:id="@+id/button_apps_done"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="完成" />
+        android:text="@string/done" />
 </LinearLayout>

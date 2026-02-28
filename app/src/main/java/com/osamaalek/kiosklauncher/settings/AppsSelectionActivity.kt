@@ -30,7 +30,11 @@ class AppsSelectionActivity : AppCompatActivity() {
             // no-op, we read selectedPackages on submit
         }
 
-        title = if (singleAppMode) "选择单个应用" else "选择多个应用"
+        title = if (singleAppMode) {
+            getString(R.string.title_select_single_app)
+        } else {
+            getString(R.string.title_select_multiple_apps)
+        }
 
         findViewById<Button>(R.id.button_apps_done).setOnClickListener {
             val data = Intent().putStringArrayListExtra(

@@ -13,14 +13,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="设备状态" />
+            android:text="@string/device_status_label" />
 
         <TextView
             android:id="@+id/text_device_owner_state"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="检查中..."
+            android:text="@string/device_status_checking"
             android:textColor="#555555" />
 
         <Switch
@@ -28,56 +28,56 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="单应用模式（仅允许1个应用）" />
+            android:text="@string/single_app_mode_label" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="允许的应用" />
+            android:text="@string/allowed_apps_label" />
 
         <TextView
             android:id="@+id/text_allowed_apps"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="未选择" />
+            android:text="@string/not_selected" />
 
         <Button
             android:id="@+id/button_select_apps"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="选择应用" />
+            android:text="@string/select_apps" />
 
         <Switch
             android:id="@+id/switch_disable_status_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="禁用状态栏" />
+            android:text="@string/disable_status_bar" />
 
         <Switch
             android:id="@+id/switch_disable_notifications"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="禁用通知" />
+            android:text="@string/disable_notifications" />
 
         <Switch
             android:id="@+id/switch_hide_navigation_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="隐藏导航栏" />
+            android:text="@string/hide_navigation_bar" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="定时启动" />
+            android:text="@string/schedule_start" />
 
         <TextView
             android:id="@+id/text_start_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="未设置" />
+            android:text="@string/not_selected" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -88,26 +88,26 @@
                 android:id="@+id/button_set_start_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="设置时间" />
+                android:text="@string/set_time" />
 
             <Button
                 android:id="@+id/button_clear_start_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="清除" />
+                android:text="@string/clear_time" />
         </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="定时退出" />
+            android:text="@string/schedule_stop" />
 
         <TextView
             android:id="@+id/text_stop_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="未设置" />
+            android:text="@string/not_selected" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -118,26 +118,26 @@
                 android:id="@+id/button_set_stop_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="设置时间" />
+                android:text="@string/set_time" />
 
             <Button
                 android:id="@+id/button_clear_stop_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="清除" />
+                android:text="@string/clear_time" />
         </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="定时重启" />
+            android:text="@string/schedule_reboot" />
 
         <TextView
             android:id="@+id/text_reboot_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="未设置" />
+            android:text="@string/not_selected" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -148,20 +148,20 @@
                 android:id="@+id/button_set_reboot_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="设置时间" />
+                android:text="@string/set_time" />
 
             <Button
                 android:id="@+id/button_clear_reboot_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="清除" />
+                android:text="@string/clear_time" />
         </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="远程策略URL" />
+            android:text="@string/remote_policy_url" />
 
         <EditText
             android:id="@+id/edit_remote_url"
@@ -173,7 +173,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="远程Token" />
+            android:text="@string/remote_token" />
 
         <EditText
             android:id="@+id/edit_remote_token"
@@ -186,30 +186,30 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="保存并应用" />
+            android:text="@string/save_and_apply" />
 
         <Button
             android:id="@+id/button_sync"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="立即同步远程策略" />
+            android:text="@string/sync_now" />
 
         <Button
             android:id="@+id/button_set_pin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="设置/修改PIN" />
+            android:text="@string/set_or_change_pin" />
 
         <Button
             android:id="@+id/button_open_system_settings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="打开系统设置" />
+            android:text="@string/open_system_settings" />
 
         <Button
             android:id="@+id/button_exit_kiosk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="退出Kiosk模式" />
+            android:text="@string/exit_kiosk_mode" />
     </LinearLayout>
 </ScrollView>

@@ -1,5 +1,100 @@
 <resources>
     <string name="app_name">Kiosk Launcher</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="device_status_label">Device Status</string>
+    <string name="device_status_checking">Checking...</string>
+    <string name="single_app_mode_label">Single-app mode (allow only one app)</string>
+    <string name="allowed_apps_label">Allowed Apps</string>
+    <string name="not_selected">Not set</string>
+    <string name="select_apps">Select apps</string>
+    <string name="disable_status_bar">Disable status bar</string>
+    <string name="disable_notifications">Disable notifications</string>
+    <string name="hide_navigation_bar">Hide navigation bar</string>
+    <string name="schedule_start">Scheduled start</string>
+    <string name="schedule_stop">Scheduled stop</string>
+    <string name="schedule_reboot">Scheduled reboot</string>
+    <string name="set_time">Set time</string>
+    <string name="clear_time">Clear</string>
+    <string name="remote_policy_url">Remote policy URL</string>
+    <string name="remote_token">Remote token</string>
+    <string name="save_and_apply">Save and apply</string>
+    <string name="sync_now">Sync remote policy now</string>
+    <string name="set_or_change_pin">Set/change PIN</string>
+    <string name="open_system_settings">Open system settings</string>
+    <string name="exit_kiosk_mode">Exit kiosk mode</string>
+
+    <string name="select_allowed_apps_title">Select allowed apps</string>
+    <string name="done">Done</string>
+    <string name="app_placeholder">App</string>
+
+    <string name="home_title">Kiosk Launcher</string>
+    <string name="home_subtitle">Only configured apps are shown</string>
+    <string name="home_empty_state">No apps configured. Use top-left hotspot to open settings.</string>
+
+    <string name="toast_single_mode_keep_one">Single-app mode keeps only one app.</string>
+    <string name="toast_sync_triggered">Sync triggered.</string>
+    <string name="toast_pin_not_set">PIN is not set.</string>
+    <string name="toast_kiosk_exited">Kiosk mode exited.</string>
+    <string name="toast_set_pin_first">Please set PIN first.</string>
+
+    <string name="mode_single_no_selection">Single-app mode: no app selected. It will auto-launch after configuration.</string>
+    <string name="mode_multi_no_selection">Multi-app mode: no app selected. Launcher will show no business apps.</string>
+    <string name="mode_single">Single-app mode</string>
+    <string name="mode_multi">Multi-app mode</string>
+    <string name="mode_selected_header">%1$s: selected %2$d apps</string>
+    <string name="mode_extra_count">\n...and %1$d apps total</string>
+    <string name="mode_single_auto_launch_suffix">\nWill auto-launch after saving</string>
+
+    <string name="error_remote_url_invalid">Remote policy URL must be a valid http/https address.</string>
+    <string name="error_single_mode_need_one">Single-app mode requires at least one selected app.</string>
+    <string name="error_single_mode_only_one">Single-app mode allows only one app.</string>
+    <string name="status_saved_owner">Saved and applied (Device Owner active).</string>
+    <string name="status_saved_not_owner">Saved, but not Device Owner. Some restrictions may not apply.</string>
+    <string name="status_saved_need_owner_setup">Saved. Please activate admin and set Device Owner.</string>
+    <string name="status_active">Active</string>
+    <string name="status_inactive">Inactive</string>
+    <string name="status_yes">Yes</string>
+    <string name="status_no">No</string>
+    <string name="status_device_owner_line">Device Admin: %1$s | Device Owner: %2$s</string>
+
+    <string name="hint_enter_pin">Enter PIN</string>
+    <string name="hint_confirm_pin">Confirm PIN</string>
+    <string name="title_set_pin">Set PIN</string>
+    <string name="button_save">Save</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="error_pin_invalid_or_mismatch">PIN is invalid or does not match.</string>
+    <string name="toast_pin_updated_saved">PIN updated and saved.</string>
+    <string name="title_enter_pin">Enter PIN</string>
+    <string name="button_confirm">Confirm</string>
+    <string name="error_pin_wrong">Wrong PIN.</string>
+
+    <string name="title_select_single_app">Select single app</string>
+    <string name="title_select_multiple_apps">Select multiple apps</string>
+
+    <string name="toast_auto_launch_countdown">Single-app mode: auto-launch in 8s. Use corner gesture to cancel.</string>
+    <string name="toast_app_not_installed">App is not installed or cannot be launched.</string>
+    <string name="toast_hold_to_open_admin">Keep pressing for 1.5s to open admin entry.</string>
+    <string name="toast_tap_remaining">Tap %1$d more times to arm admin entry.</string>
+    <string name="toast_admin_armed">Admin entry armed. Long-press top-left for 1.5s.</string>
+    <string name="toast_corner_step">Admin gesture %1$d/%2$d complete.</string>
+    <string name="toast_corner_timeout">Gesture timeout. Start again.</string>
+    <string name="toast_corner_retry">Wrong corner order. Start from top-left.</string>
+    <string name="toast_emergency_tap_remaining">Emergency unlock: tap %1$d more times.</string>
+    <string name="toast_emergency_ready">Emergency unlock accepted. Enter PIN.</string>
+    <string name="toast_back_tap_remaining">Press back %1$d more times to arm admin entry.</string>
+    <string name="toast_back_admin_armed">Admin entry armed. Press back once more to confirm.</string>
+    <string name="toast_back_hold_to_open_admin">Keep pressing back for 1.5s.</string>
+    <string name="toast_back_confirm_timeout">Confirmation timeout. Start from 5 presses again.</string>
+    <string name="toast_back_press_once_to_confirm">Press back once more to confirm admin entry.</string>
+
+    <string name="toast_missing_owner_permission">Missing Device Owner permission, cannot set default launcher.</string>
+    <string name="toast_cannot_open_admin_settings">Cannot open device admin settings.</string>
+    <string name="toast_not_owner_device">This app is not a device owner app.</string>
+    <string name="toast_no_alternative_home">No alternative launcher found. Please set Home app manually.</string>
+
+    <string name="toast_app_not_whitelisted">App is not whitelisted for kiosk or blocked by system policy.</string>
+    <string name="toast_app_cannot_launch">App cannot be launched.</string>
+    <string name="error_pin_wrong_with_remaining">Wrong PIN. %1$d attempts left.</string>
+    <string name="error_pin_locked_seconds">Too many failed attempts. Try again in %1$d seconds.</string>
 </resources>

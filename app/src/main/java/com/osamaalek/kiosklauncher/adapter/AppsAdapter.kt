@@ -33,10 +33,11 @@ class AppsAdapter(private val list: List<AppInfo>, private val context: Context)
                 try {
                     context.startActivity(launchIntent)
                 } catch (_: SecurityException) {
-                    Toast.makeText(context, "应用未加入 kiosk 白名单或系统限制启动", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.toast_app_not_whitelisted), Toast.LENGTH_SHORT)
+                        .show()
                 }
             } else {
-                Toast.makeText(context, "应用无法启动", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.toast_app_cannot_launch), Toast.LENGTH_SHORT).show()
             }
         }
     }

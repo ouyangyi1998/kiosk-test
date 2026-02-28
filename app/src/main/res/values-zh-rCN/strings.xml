@@ -1,0 +1,100 @@
+<resources>
+    <string name="app_name">Kiosk Launcher</string>
+    <string name="hello_blank_fragment">空白页面</string>
+
+    <string name="device_status_label">设备状态</string>
+    <string name="device_status_checking">检查中…</string>
+    <string name="single_app_mode_label">单应用模式（仅允许1个应用）</string>
+    <string name="allowed_apps_label">允许的应用</string>
+    <string name="not_selected">未设置</string>
+    <string name="select_apps">选择应用</string>
+    <string name="disable_status_bar">禁用状态栏</string>
+    <string name="disable_notifications">禁用通知</string>
+    <string name="hide_navigation_bar">隐藏导航栏</string>
+    <string name="schedule_start">定时启动</string>
+    <string name="schedule_stop">定时退出</string>
+    <string name="schedule_reboot">定时重启</string>
+    <string name="set_time">设置时间</string>
+    <string name="clear_time">清除</string>
+    <string name="remote_policy_url">远程策略URL</string>
+    <string name="remote_token">远程Token</string>
+    <string name="save_and_apply">保存并应用</string>
+    <string name="sync_now">立即同步远程策略</string>
+    <string name="set_or_change_pin">设置/修改PIN</string>
+    <string name="open_system_settings">打开系统设置</string>
+    <string name="exit_kiosk_mode">退出Kiosk模式</string>
+
+    <string name="select_allowed_apps_title">选择允许的应用</string>
+    <string name="done">完成</string>
+    <string name="app_placeholder">应用</string>
+
+    <string name="home_title">Kiosk Launcher</string>
+    <string name="home_subtitle">仅展示已配置应用</string>
+    <string name="home_empty_state">未配置可用应用，请长按左上角进入设置。</string>
+
+    <string name="toast_single_mode_keep_one">单应用模式下仅保留一个应用。</string>
+    <string name="toast_sync_triggered">已触发同步。</string>
+    <string name="toast_pin_not_set">未设置PIN。</string>
+    <string name="toast_kiosk_exited">已退出Kiosk模式。</string>
+    <string name="toast_set_pin_first">请先设置PIN。</string>
+
+    <string name="mode_single_no_selection">单应用模式：未选择。配置后会自动直启该应用。</string>
+    <string name="mode_multi_no_selection">多应用模式：未选择。Launcher 将不显示任何业务应用。</string>
+    <string name="mode_single">单应用模式</string>
+    <string name="mode_multi">多应用模式</string>
+    <string name="mode_selected_header">%1$s：已选择 %2$d 个应用</string>
+    <string name="mode_extra_count">\n…共 %1$d 个应用</string>
+    <string name="mode_single_auto_launch_suffix">\n保存后会自动直启该应用</string>
+
+    <string name="error_remote_url_invalid">远程策略 URL 必须是有效的 http/https 地址。</string>
+    <string name="error_single_mode_need_one">单应用模式下请至少选择 1 个应用。</string>
+    <string name="error_single_mode_only_one">单应用模式下只能选择 1 个应用。</string>
+    <string name="status_saved_owner">已保存并应用（Device Owner 已生效）。</string>
+    <string name="status_saved_not_owner">已保存，但当前非 Device Owner，部分限制可能不生效。</string>
+    <string name="status_saved_need_owner_setup">已保存，请先激活设备管理并设置 Device Owner。</string>
+    <string name="status_active">已激活</string>
+    <string name="status_inactive">未激活</string>
+    <string name="status_yes">是</string>
+    <string name="status_no">否</string>
+    <string name="status_device_owner_line">Device Admin: %1$s | Device Owner: %2$s</string>
+
+    <string name="hint_enter_pin">输入PIN</string>
+    <string name="hint_confirm_pin">确认PIN</string>
+    <string name="title_set_pin">设置PIN</string>
+    <string name="button_save">保存</string>
+    <string name="button_cancel">取消</string>
+    <string name="error_pin_invalid_or_mismatch">PIN无效或不一致。</string>
+    <string name="toast_pin_updated_saved">PIN已更新并保存。</string>
+    <string name="title_enter_pin">请输入PIN</string>
+    <string name="button_confirm">确认</string>
+    <string name="error_pin_wrong">PIN错误。</string>
+
+    <string name="title_select_single_app">选择单个应用</string>
+    <string name="title_select_multiple_apps">选择多个应用</string>
+
+    <string name="toast_auto_launch_countdown">单应用模式：8秒后自动启动，可通过角落手势取消。</string>
+    <string name="toast_app_not_installed">应用未安装或不可启动。</string>
+    <string name="toast_hold_to_open_admin">请继续长按 1.5 秒进入管理入口。</string>
+    <string name="toast_tap_remaining">再点击 %1$d 次激活管理入口。</string>
+    <string name="toast_admin_armed">管理入口已激活，请长按左上角 1.5 秒。</string>
+    <string name="toast_corner_step">管理员手势已完成 %1$d/%2$d。</string>
+    <string name="toast_corner_timeout">手势超时，请重新开始。</string>
+    <string name="toast_corner_retry">角落顺序错误，请从左上角重新开始。</string>
+    <string name="toast_emergency_tap_remaining">重启应急入口：还需点击 %1$d 次。</string>
+    <string name="toast_emergency_ready">应急入口已触发，请输入 PIN。</string>
+    <string name="toast_back_tap_remaining">再按返回键 %1$d 次激活管理入口。</string>
+    <string name="toast_back_admin_armed">管理入口已激活，请再按一次返回键确认。</string>
+    <string name="toast_back_hold_to_open_admin">请继续长按返回键 1.5 秒。</string>
+    <string name="toast_back_confirm_timeout">确认超时，请重新按 5 次返回键。</string>
+    <string name="toast_back_press_once_to_confirm">请再按一次返回键确认进入管理入口。</string>
+
+    <string name="toast_missing_owner_permission">缺少 Device Owner 权限，无法设置默认桌面。</string>
+    <string name="toast_cannot_open_admin_settings">无法打开设备管理设置页。</string>
+    <string name="toast_not_owner_device">当前应用不是设备所有者。</string>
+    <string name="toast_no_alternative_home">未找到其他桌面应用，请手动设置默认桌面。</string>
+
+    <string name="toast_app_not_whitelisted">应用未加入 kiosk 白名单或系统限制启动。</string>
+    <string name="toast_app_cannot_launch">应用无法启动。</string>
+    <string name="error_pin_wrong_with_remaining">PIN错误，还可尝试 %1$d 次。</string>
+    <string name="error_pin_locked_seconds">失败次数过多，请在 %1$d 秒后重试。</string>
+</resources>

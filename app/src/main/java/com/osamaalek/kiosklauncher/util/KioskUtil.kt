@@ -6,18 +6,34 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.ResolveInfo
 import android.os.Build
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import com.osamaalek.kiosklauncher.MyDeviceAdminReceiver
+import com.osamaalek.kiosklauncher.R
 import com.osamaalek.kiosklauncher.policy.PolicyApplier
 import com.osamaalek.kiosklauncher.policy.PolicyStore
 import com.osamaalek.kiosklauncher.ui.MainActivity
 
 class KioskUtil {
     companion object {
-        fun startKioskMode(context: Activity) {
+        private const val RUNTIME_PREFS = "kiosk_runtime"
+        private const val KEY_MANUAL_EXIT = "manual_exit"
+
+        fun resumeKioskMode(context: Context) {
+            runtimePrefs(context).edit().putBoolean(KEY_MANUAL_EXIT, false).apply()
+        }
+
+        fun startKioskMode(context: Activity, launchedAsHome: Boolean = false) {
+            if (runtimePrefs(context).getBoolean(KEY_MANUAL_EXIT, false)) {
+                // When manually exited, only HOME launches should be redirected.
+                if (launchedAsHome) {
+                    openAlternativeHome(context)
+                }
+                return
+            }
             val devicePolicyManager =
                 context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
             val myDeviceAdmin = ComponentName(context, MyDeviceAdminReceiver::class.java)
@@ -36,8 +52,11 @@ class KioskUtil {
                 try {
                     devicePolicyManager.addPersistentPreferredActivity(myDeviceAdmin, filter, activity)
                 } catch (_: SecurityException) {
-                    Toast.makeText(context, "缺少 Device Owner 权限，无法设置默认桌面", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_missing_owner_permission),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
 
                 val policy = PolicyStore(context).getPolicy()
@@ -45,7 +64,7 @@ class KioskUtil {
                 applyWindowPolicy(context, policy.hideNavigationBar)
             } else {
                 Toast.makeText(
-                    context, "This app is not an owner device", Toast.LENGTH_SHORT
+                    context, context.getString(R.string.toast_not_owner_device), Toast.LENGTH_SHORT
                 ).show()
             }
 
@@ -64,6 +83,8 @@ class KioskUtil {
             val devicePolicyManager =
                 context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
             val myDeviceAdmin = ComponentName(context, MyDeviceAdminReceiver::class.java)
+            runtimePrefs(context).edit().putBoolean(KEY_MANUAL_EXIT, true).apply()
+            val alternativeHome = findAlternativeHome(context)
             if (devicePolicyManager.isAdminActive(myDeviceAdmin)) {
                 try {
                     context.stopLockTask()
@@ -72,19 +93,44 @@ class KioskUtil {
                 }
             }
             if (devicePolicyManager.isDeviceOwnerApp(context.packageName)) {
-                devicePolicyManager.clearPackagePersistentPreferredActivities(
-                    myDeviceAdmin,
-                    context.packageName
-                )
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    devicePolicyManager.setStatusBarDisabled(myDeviceAdmin, false)
+                try {
+                    devicePolicyManager.setLockTaskPackages(myDeviceAdmin, emptyArray())
+                    devicePolicyManager.setLockTaskFeatures(
+                        myDeviceAdmin,
+                        DevicePolicyManager.LOCK_TASK_FEATURE_NONE
+                    )
+                } catch (_: Exception) {
+                    // Ignore ROM-level lock task API inconsistencies.
                 }
-                devicePolicyManager.clearUserRestriction(
-                    myDeviceAdmin,
-                    android.os.UserManager.DISALLOW_UNINSTALL_APPS
-                )
+                try {
+                    devicePolicyManager.clearPackagePersistentPreferredActivities(
+                        myDeviceAdmin,
+                        context.packageName
+                    )
+                    if (alternativeHome != null) {
+                        val filter = IntentFilter(Intent.ACTION_MAIN).apply {
+                            addCategory(Intent.CATEGORY_HOME)
+                            addCategory(Intent.CATEGORY_DEFAULT)
+                        }
+                        val target = ComponentName(
+                            alternativeHome.activityInfo.packageName,
+                            alternativeHome.activityInfo.name
+                        )
+                        devicePolicyManager.addPersistentPreferredActivity(myDeviceAdmin, filter, target)
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        devicePolicyManager.setStatusBarDisabled(myDeviceAdmin, false)
+                    }
+                    devicePolicyManager.clearUserRestriction(
+                        myDeviceAdmin,
+                        android.os.UserManager.DISALLOW_UNINSTALL_APPS
+                    )
+                } catch (_: SecurityException) {
+                    // Ignore if owner privileges change at runtime.
+                }
             }
             context.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+            openAlternativeHome(context)
         }
 
         fun applyWindowPolicy(activity: Activity, hideNavigationBar: Boolean) {
@@ -113,8 +159,46 @@ class KioskUtil {
                 try {
                     context.startActivity(fallbackIntent)
                 } catch (_: Exception) {
-                    Toast.makeText(context, "无法打开设备管理设置页", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_cannot_open_admin_settings),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+            }
+        }
+
+        private fun runtimePrefs(context: Context) =
+            context.getSharedPreferences(RUNTIME_PREFS, Context.MODE_PRIVATE)
+
+        private fun findAlternativeHome(context: Context): ResolveInfo? {
+            val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+            val allHomes = context.packageManager.queryIntentActivities(intent, 0)
+            return allHomes.firstOrNull { it.activityInfo.packageName != context.packageName }
+        }
+
+        private fun openAlternativeHome(context: Context) {
+            val target = findAlternativeHome(context)
+            if (target != null) {
+                try {
+                    val intent = Intent(Intent.ACTION_MAIN)
+                        .addCategory(Intent.CATEGORY_HOME)
+                        .setComponent(ComponentName(target.activityInfo.packageName, target.activityInfo.name))
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    context.startActivity(intent)
+                    return
+                } catch (_: Exception) {
+                    // Fallback below.
+                }
+            }
+            try {
+                context.startActivity(
+                    Intent(android.provider.Settings.ACTION_HOME_SETTINGS)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+            } catch (_: Exception) {
+                Toast.makeText(context, context.getString(R.string.toast_no_alternative_home), Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }

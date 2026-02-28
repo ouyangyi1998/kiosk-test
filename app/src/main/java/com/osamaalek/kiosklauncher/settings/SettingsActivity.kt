@@ -81,7 +81,7 @@ class SettingsActivity : AppCompatActivity() {
                 selectedPackages.add(first)
             }
             updateAllowedAppsText()
-            Toast.makeText(this, "单应用模式下仅保留一个应用", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.toast_single_mode_keep_one), Toast.LENGTH_SHORT).show()
         }
 
         findViewById<Button>(R.id.button_select_apps).setOnClickListener {
@@ -101,7 +101,7 @@ class SettingsActivity : AppCompatActivity() {
         }
         findViewById<Button>(R.id.button_clear_start_time).setOnClickListener {
             startTime = null
-            startTimeText.text = "未设置"
+            startTimeText.text = getString(R.string.not_selected)
         }
         findViewById<Button>(R.id.button_set_stop_time).setOnClickListener {
             openTimePicker(stopTime) { value ->
@@ -111,7 +111,7 @@ class SettingsActivity : AppCompatActivity() {
         }
         findViewById<Button>(R.id.button_clear_stop_time).setOnClickListener {
             stopTime = null
-            stopTimeText.text = "未设置"
+            stopTimeText.text = getString(R.string.not_selected)
         }
         findViewById<Button>(R.id.button_set_reboot_time).setOnClickListener {
             openTimePicker(rebootTime) { value ->
@@ -121,12 +121,13 @@ class SettingsActivity : AppCompatActivity() {
         }
         findViewById<Button>(R.id.button_clear_reboot_time).setOnClickListener {
             rebootTime = null
-            rebootTimeText.text = "未设置"
+            rebootTimeText.text = getString(R.string.not_selected)
         }
 
         findViewById<Button>(R.id.button_save).setOnClickListener {
             val policy = buildPolicy()
             if (!validatePolicy(policy)) return@setOnClickListener
+            KioskUtil.resumeKioskMode(this)
             store.savePolicy(policy)
             applier.apply(policy)
             KioskScheduler.scheduleAll(this, policy)
@@ -138,7 +139,7 @@ class SettingsActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.button_sync).setOnClickListener {
             PolicySyncWorker.runOnce(this)
-            Toast.makeText(this, "已触发同步", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.toast_sync_triggered), Toast.LENGTH_SHORT).show()
         }
 
         findViewById<Button>(R.id.button_set_pin).setOnClickListener {
@@ -151,13 +152,15 @@ class SettingsActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.button_exit_kiosk).setOnClickListener {
             if (currentPinHash.isNullOrBlank()) {
-                Toast.makeText(this, "未设置PIN", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.toast_pin_not_set), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             PinPrompt.verifyPin(this, currentPinHash) {
                 KioskUtil.stopKioskMode(this)
-                Toast.makeText(this, "已退出Kiosk模式", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.toast_kiosk_exited), Toast.LENGTH_SHORT).show()
                 refreshDeviceState()
+                startActivity(Intent(android.provider.Settings.ACTION_SETTINGS))
+                finishAffinity()
             }
         }
     }
@@ -183,9 +186,9 @@ class SettingsActivity : AppCompatActivity() {
         startTime = policy.scheduleStart
         stopTime = policy.scheduleStop
         rebootTime = policy.rebootTime
-        startTimeText.text = policy.scheduleStart ?: "未设置"
-        stopTimeText.text = policy.scheduleStop ?: "未设置"
-        rebootTimeText.text = policy.rebootTime ?: "未设置"
+        startTimeText.text = policy.scheduleStart ?: getString(R.string.not_selected)
+        stopTimeText.text = policy.scheduleStop ?: getString(R.string.not_selected)
+        rebootTimeText.text = policy.rebootTime ?: getString(R.string.not_selected)
 
         currentPinHash = policy.exitPinHash
     }
@@ -210,30 +213,42 @@ class SettingsActivity : AppCompatActivity() {
     private fun updateAllowedAppsText() {
         allowedAppsText.text = if (selectedPackages.isEmpty()) {
             if (switchSingleAppMode.isChecked) {
-                "单应用模式：未选择。配置后会自动直启该应用。"
+                getString(R.string.mode_single_no_selection)
             } else {
-                "多应用模式：未选择。Launcher 将不显示任何业务应用。"
+                getString(R.string.mode_multi_no_selection)
             }
         } else {
-            val mode = if (switchSingleAppMode.isChecked) "单应用模式" else "多应用模式"
+            val mode = if (switchSingleAppMode.isChecked) {
+                getString(R.string.mode_single)
+            } else {
+                getString(R.string.mode_multi)
+            }
             val preview = selectedPackages.take(3).joinToString("\n")
-            val tail = if (selectedPackages.size > 3) "\n...等 ${selectedPackages.size} 个应用" else ""
-            val suffix = if (switchSingleAppMode.isChecked) "\n保存后会自动直启该应用" else ""
-            "$mode：已选择 ${selectedPackages.size} 个应用\n$preview$tail$suffix"
+            val tail = if (selectedPackages.size > 3) {
+                getString(R.string.mode_extra_count, selectedPackages.size)
+            } else {
+                ""
+            }
+            val suffix = if (switchSingleAppMode.isChecked) {
+                getString(R.string.mode_single_auto_launch_suffix)
+            } else {
+                ""
+            }
+            "${getString(R.string.mode_selected_header, mode, selectedPackages.size)}\n$preview$tail$suffix"
         }
     }
 
     private fun validatePolicy(policy: KioskPolicy): Boolean {
         if (!policy.remoteUrl.isNullOrBlank() && !isValidHttpUrl(policy.remoteUrl)) {
-            Toast.makeText(this, "远程策略 URL 必须是有效的 http/https 地址", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.error_remote_url_invalid), Toast.LENGTH_SHORT).show()
             return false
         }
         if (policy.singleAppMode && policy.allowedPackages.isEmpty()) {
-            Toast.makeText(this, "单应用模式下请至少选择 1 个应用", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.error_single_mode_need_one), Toast.LENGTH_SHORT).show()
             return false
         }
         if (policy.singleAppMode && policy.allowedPackages.size > 1) {
-            Toast.makeText(this, "单应用模式下只能选择 1 个应用", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.error_single_mode_only_one), Toast.LENGTH_SHORT).show()
             return false
         }
         return true
@@ -256,9 +271,9 @@ class SettingsActivity : AppCompatActivity() {
         val isAdmin = dpm.isAdminActive(admin)
         val isOwner = dpm.isDeviceOwnerApp(packageName)
         return when {
-            isOwner -> "已保存并应用（Device Owner 已生效）"
-            isAdmin -> "已保存，但当前非 Device Owner，部分限制可能不生效"
-            else -> "已保存，请先激活设备管理并设置 Device Owner"
+            isOwner -> getString(R.string.status_saved_owner)
+            isAdmin -> getString(R.string.status_saved_not_owner)
+            else -> getString(R.string.status_saved_need_owner_setup)
         }
     }
 
@@ -267,8 +282,9 @@ class SettingsActivity : AppCompatActivity() {
         val admin = ComponentName(this, MyDeviceAdminReceiver::class.java)
         val isAdmin = dpm.isAdminActive(admin)
         val isOwner = dpm.isDeviceOwnerApp(packageName)
-        deviceOwnerStateText.text =
-            "Device Admin: ${if (isAdmin) "已激活" else "未激活"} | Device Owner: ${if (isOwner) "是" else "否"}"
+        val adminText = if (isAdmin) getString(R.string.status_active) else getString(R.string.status_inactive)
+        val ownerText = if (isOwner) getString(R.string.status_yes) else getString(R.string.status_no)
+        deviceOwnerStateText.text = getString(R.string.status_device_owner_line, adminText, ownerText)
     }
 
     private fun openTimePicker(current: String?, onSelected: (String) -> Unit) {
@@ -293,8 +309,8 @@ class SettingsActivity : AppCompatActivity() {
             android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD
         input2.inputType = android.text.InputType.TYPE_CLASS_NUMBER or
             android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD
-        input1.hint = "输入PIN"
-        input2.hint = "确认PIN"
+        input1.hint = getString(R.string.hint_enter_pin)
+        input2.hint = getString(R.string.hint_confirm_pin)
         val layout = android.widget.LinearLayout(this).apply {
             orientation = android.widget.LinearLayout.VERTICAL
             addView(input1)
@@ -303,13 +319,14 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         AlertDialog.Builder(this)
-            .setTitle("设置PIN")
+            .setTitle(R.string.title_set_pin)
             .setView(layout)
-            .setPositiveButton("保存") { _, _ ->
+            .setPositiveButton(R.string.button_save) { _, _ ->
                 val pin1 = input1.text.toString()
                 val pin2 = input2.text.toString()
                 if (pin1.length < 4 || pin1 != pin2) {
-                    Toast.makeText(this, "PIN无效或不一致", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.error_pin_invalid_or_mismatch), Toast.LENGTH_SHORT)
+                        .show()
                     return@setPositiveButton
                 }
                 currentPinHash = PinUtil.hashPin(pin1)
@@ -319,10 +336,10 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 store.savePolicy(policy)
                 applier.apply(policy)
-                Toast.makeText(this, "PIN已更新并保存", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.toast_pin_updated_saved), Toast.LENGTH_SHORT).show()
                 refreshDeviceState()
             }
-            .setNegativeButton("取消", null)
+            .setNegativeButton(R.string.button_cancel, null)
             .show()
     }
 
@@ -334,7 +351,7 @@ class SettingsActivity : AppCompatActivity() {
             selectedPackages.clear()
             if (switchSingleAppMode.isChecked && selected.size > 1) {
                 selected.firstOrNull()?.let { selectedPackages.add(it) }
-                Toast.makeText(this, "单应用模式下仅保留一个应用", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.toast_single_mode_keep_one), Toast.LENGTH_SHORT).show()
             } else {
                 selectedPackages.addAll(selected)
             }
