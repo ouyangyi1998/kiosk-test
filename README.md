@@ -1,50 +1,50 @@
 # Kiosk Launcher
 
-Kiosk Launcher is an Android app that turns a device into a policy-driven kiosk launcher. It can lock the device to one or more configured apps, apply lock-task restrictions, and provide a protected management entry for operators.
+Kiosk Launcher 是一款 Android 应用，可将设备转变为策略驱动的 Kiosk 启动器。它可以锁定设备到一个或多个已配置的应用，应用锁屏任务限制，并为操作员提供受保护的管理入口。
 
-## Features
+## 功能特性
 
-- App-based kiosk launcher (no WebView homepage)
-- Single-app mode (auto-launches the configured app after a short delay)
-- Multi-app mode (shows only configured and installed apps)
-- Lock-task controls: status bar, notifications, and immersive navigation behavior
-- PIN-protected management access and kiosk exit
-- Two-step anti-mistouch exit gesture (5 taps + 1.2s long press)
-- Local settings UI + remote policy sync (HTTP JSON)
-- Schedule start/stop kiosk and scheduled reboot
-- Android 10+ (Device Owner recommended for full restrictions)
+- 基于应用的 Kiosk 启动器（无 WebView 主页）
+- 单应用模式（短延时后自动启动已配置应用）
+- 多应用模式（仅显示已配置且已安装的应用）
+- 锁屏任务控制：状态栏、通知栏及沉浸式导航行为
+- PIN 保护的管理入口与 Kiosk 退出
+- 两步防误触退出手势（5 次点击 + 1.2 秒长按）
+- 本地设置 UI + 远程策略同步（HTTP JSON）
+- 定时启动/停止 Kiosk 及定时重启
+- Android 10+（建议使用设备所有者模式以实现完整限制）
 
-## Usage
+## 使用方法
 
-### Configure kiosk apps
+### 配置 Kiosk 应用
 
-1. Open Settings from the management entry.
-2. Choose allowed packages.
-3. Enable single-app mode (optional) to auto-launch one app.
-4. Save and apply policy.
+1. 从管理入口打开设置。
+2. 选择允许的包名。
+3. （可选）启用单应用模式以自动启动指定应用。
+4. 保存并应用策略。
 
-### Enter management / exit kiosk
+### 进入管理 / 退出 Kiosk
 
-Use the hotspot in the top-left corner:
+使用左上角热区：
 
-1. Tap 5 times quickly (within 3 seconds) to arm management entry.
-2. Long-press for 1.2 seconds.
-3. Enter PIN to open Settings.
-4. Use "退出Kiosk模式" if you need to leave kiosk.
+1. 在 3 秒内快速点击 5 次以激活管理入口。
+2. 长按 1.2 秒。
+3. 输入 PIN 打开设置。
+4. 需要退出 Kiosk 时使用「退出Kiosk模式」。
 
-## Device Owner Requirement
+## 设备所有者要求
 
-For full lock-task behavior (especially status/notification restrictions), use Device Owner provisioning.
+若要获得完整的锁屏任务行为（尤其是状态栏/通知栏限制），请使用设备所有者配置。
 
-Set Device Owner on a freshly provisioned device:
+在全新配置的设备上设置设备所有者：
 
-```
+```bash
 adb shell dpm set-device-owner com.osamaalek.kiosklauncher/.MyDeviceAdminReceiver
 ```
 
-Without Device Owner, some vendor ROMs may fall back to pinned mode or ignore parts of lock-task policy.
+若未设置设备所有者，部分厂商 ROM 可能回退为固定模式或忽略部分锁屏任务策略。
 
-## Remote policy JSON example
+## 远程策略 JSON 示例
 
 ```json
 {
@@ -63,26 +63,25 @@ Without Device Owner, some vendor ROMs may fall back to pinned mode or ignore pa
 }
 ```
 
-The remote token is sent as `Authorization: Bearer <token>`.
-`kioskUrl` is retained for compatibility but is not used as homepage in app-launcher mode.
+远程 token 以 `Authorization: Bearer <token>` 形式发送。`kioskUrl` 保留以兼容旧版本，在应用启动器模式下不作为主页使用。
 
-## Troubleshooting
+## 故障排除
 
-- `App is pinned` appears: Device Owner is not fully active on current ROM/provisioning state.
-- Can't launch selected app in kiosk: ensure the package is installed and included in `allowedPackages`.
-- Restrictions not applied: verify Device Owner is active, then re-save policy in Settings.
+- 出现「App is pinned」：当前 ROM/配置下设备所有者未完全生效。
+- Kiosk 中无法启动所选应用：确认应用已安装且包含在 `allowedPackages` 中。
+- 限制未生效：验证设备所有者已激活，然后在设置中重新保存策略。
 
-## Article
+## 技术文章
 
-If you want to learn more about the technical details and the design process of this project, you can read my article on Medium:
+如需进一步了解本项目的技术细节与设计过程，可阅读 Medium 上的系列文章：
 
 https://medium.com/@osamaalek/how-to-build-a-kiosk-launcher-for-android-part-1-beb54476da56
 https://medium.com/@osamaalek/how-to-build-a-kiosk-launcher-for-android-part-2-9a529f503c11
 
-## License
+## 许可证
 
-Kiosk Launcher is licensed under the Apache License 2.0. See [LICENSE](https://github.com/osamaalek/Kiosk-Launcher/blob/master/LICENSE) for more details.
+Kiosk Launcher 遵循 Apache License 2.0。详见 [LICENSE](https://github.com/osamaalek/Kiosk-Launcher/blob/master/LICENSE)。
 
-## Contact
+## 联系方式
 
-If you have any questions, feedback, or suggestions, feel free to contact me at osamaalek@gmail.com or open an issue on GitHub.
+如有问题、反馈或建议，欢迎通过 osamaalek@gmail.com 联系，或在 GitHub 上提交 Issue。
