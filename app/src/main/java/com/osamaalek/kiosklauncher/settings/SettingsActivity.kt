@@ -150,6 +150,10 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(Intent(android.provider.Settings.ACTION_SETTINGS))
         }
 
+        findViewById<Button>(R.id.button_wifi_config).setOnClickListener {
+            startActivity(WifiConfigActivity.newIntent(this))
+        }
+
         findViewById<Button>(R.id.button_exit_kiosk).setOnClickListener {
             if (currentPinHash.isNullOrBlank()) {
                 Toast.makeText(this, getString(R.string.toast_pin_not_set), Toast.LENGTH_SHORT).show()

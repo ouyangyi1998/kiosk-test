@@ -2,6 +2,7 @@ package com.osamaalek.kiosklauncher.ui
 
 import android.content.Intent
 import android.os.Build
+import android.view.View
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,7 +12,6 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.view.MotionEvent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.osamaalek.kiosklauncher.R
 import com.osamaalek.kiosklauncher.adapter.AppsAdapter
+import com.osamaalek.kiosklauncher.settings.WifiConfigActivity
 import com.osamaalek.kiosklauncher.policy.PolicyStore
 import com.osamaalek.kiosklauncher.util.AppsUtil
 
@@ -86,6 +87,10 @@ class HomeFragment : Fragment() {
         setupCornerSwipeListener(topRightCornerView, CORNER_TOP_RIGHT)
         setupCornerSwipeListener(bottomRightCornerView, CORNER_BOTTOM_RIGHT)
         setupCornerSwipeListener(bottomLeftCornerView, CORNER_BOTTOM_LEFT)
+
+        view.findViewById<View>(R.id.button_wifi).setOnClickListener {
+            startActivity(WifiConfigActivity.newIntent(requireContext()))
+        }
 
         renderLauncher(allowAutoLaunch = false)
     }

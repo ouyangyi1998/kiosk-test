@@ -201,6 +201,12 @@
             android:text="@string/set_or_change_pin" />
 
         <Button
+            android:id="@+id/button_wifi_config"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wifi_config" />
+
+        <Button
             android:id="@+id/button_open_system_settings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

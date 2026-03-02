@@ -22,6 +22,35 @@
     <string name="sync_now">Sync remote policy now</string>
     <string name="set_or_change_pin">Set/change PIN</string>
     <string name="open_system_settings">Open system settings</string>
+    <string name="wifi_config">WiFi configuration</string>
+
+    <string name="wifi_config_title">WiFi Configuration</string>
+    <string name="wifi_config_hint">Enter SSID and password to connect, or scan for nearby networks.</string>
+    <string name="wifi_ssid_label">Network name (SSID)</string>
+    <string name="wifi_ssid_hint">e.g. MyWiFi</string>
+    <string name="wifi_security_label">Security type</string>
+    <string name="wifi_security_wpa2">WPA2-PSK</string>
+    <string name="wifi_security_wpa3">WPA3-SAE</string>
+    <string name="wifi_security_open">Open (no password)</string>
+    <string name="wifi_password_label">Password</string>
+    <string name="wifi_password_hint">Enter WiFi password</string>
+    <string name="wifi_scan_networks">Scan for networks</string>
+    <string name="wifi_scan_results_label">Scanned networks (tap to select)</string>
+    <string name="wifi_connect">Connect</string>
+    <string name="wifi_open_system_settings">Open system WiFi settings</string>
+    <string name="wifi_please_enable">Please enable WiFi first.</string>
+    <string name="wifi_scanning">Scanning…</string>
+    <string name="wifi_scan_failed">Scan failed. Enable WiFi and location.</string>
+    <string name="wifi_scan_throttled">Scan throttled. Please wait a moment before scanning again.</string>
+    <string name="wifi_scan_no_results">No networks found.</string>
+    <string name="wifi_scan_success">Found %d networks.</string>
+    <string name="wifi_hidden_network">(Hidden network)</string>
+    <string name="wifi_currently_connected">Connected</string>
+    <string name="wifi_ssid_required">Please enter network name.</string>
+    <string name="wifi_password_required">Please enter password.</string>
+    <string name="wifi_connected">Connected successfully.</string>
+    <string name="wifi_connect_failed">Connection failed. Check password.</string>
+    <string name="wifi_location_required">Location permission required for WiFi scan.</string>
     <string name="exit_kiosk_mode">Exit kiosk mode</string>
 
     <string name="select_allowed_apps_title">Select allowed apps</string>

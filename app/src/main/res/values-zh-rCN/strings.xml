@@ -22,6 +22,35 @@
     <string name="sync_now">立即同步远程策略</string>
     <string name="set_or_change_pin">设置/修改PIN</string>
     <string name="open_system_settings">打开系统设置</string>
+    <string name="wifi_config">WiFi 配置</string>
+
+    <string name="wifi_config_title">WiFi 配置</string>
+    <string name="wifi_config_hint">输入 SSID 和密码连接，或扫描附近网络。</string>
+    <string name="wifi_ssid_label">网络名称 (SSID)</string>
+    <string name="wifi_ssid_hint">例如：MyWiFi</string>
+    <string name="wifi_security_label">安全类型</string>
+    <string name="wifi_security_wpa2">WPA2-PSK</string>
+    <string name="wifi_security_wpa3">WPA3-SAE</string>
+    <string name="wifi_security_open">开放网络（无密码）</string>
+    <string name="wifi_password_label">密码</string>
+    <string name="wifi_password_hint">输入 WiFi 密码</string>
+    <string name="wifi_scan_networks">扫描网络</string>
+    <string name="wifi_scan_results_label">已扫描网络（点击选择）</string>
+    <string name="wifi_connect">连接</string>
+    <string name="wifi_open_system_settings">打开系统 WiFi 设置</string>
+    <string name="wifi_please_enable">请先开启 WiFi。</string>
+    <string name="wifi_scanning">正在扫描…</string>
+    <string name="wifi_scan_failed">扫描失败，请确保 WiFi 和定位已开启。</string>
+    <string name="wifi_scan_throttled">扫描过于频繁，请稍后再试。</string>
+    <string name="wifi_scan_no_results">未发现网络。</string>
+    <string name="wifi_scan_success">发现 %d 个网络。</string>
+    <string name="wifi_hidden_network">（隐藏网络）</string>
+    <string name="wifi_currently_connected">已连接</string>
+    <string name="wifi_ssid_required">请输入网络名称。</string>
+    <string name="wifi_password_required">请输入密码。</string>
+    <string name="wifi_connected">连接成功。</string>
+    <string name="wifi_connect_failed">连接失败，请检查密码。</string>
+    <string name="wifi_location_required">扫描 WiFi 需要定位权限。</string>
     <string name="exit_kiosk_mode">退出Kiosk模式</string>
 
     <string name="select_allowed_apps_title">选择允许的应用</string>
